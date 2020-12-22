@@ -1,12 +1,12 @@
 import AWS from "aws-sdk";
 
-import { APIGatewayProxyHandler } from "aws-lambda";
+import type { APIGatewayProxyHandler } from "aws-lambda";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const fetchRates = () => {
   const params = {
-    TableName: process.env.currencyRatesTableName,
+    TableName: process.env.CURRENCY_RATES_TABLE_NAME,
     KeyConditionExpression: "id = :t",
     ExpressionAttributeValues: {
       ":t": "usd-eur",

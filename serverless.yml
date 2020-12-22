@@ -29,6 +29,10 @@ custom:
     keepOutputDirectory: true
     packager: 'npm'
 
+  dotenv:
+    required:
+      file: true
+
 functions:
   convertCurrencyApi:
     handler: src/convert-currency.convertCurrency
