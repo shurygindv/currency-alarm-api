@@ -1,0 +1,65 @@
+service: currency-alarm-api
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  provider: 
+  region: eu-west-1
+  timeout: 5
+  memorySize: 256
+  apiGateway:
+    minimumCompressionSize: 1024
+    shouldStartNameWithService: true
+  tracing:
+    apiGateway: true
+    lambda: true
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    includeModules: true
+    keepOutputDirectory: true
+    packager: 'npm'
+
+functions:
+  convertCurrencyApi:
+    handler: src/convert-currency.convertCurrency
+    events:
+      - http:
+          path: convert-currency
+          method: get
+          cors: true
+
+          request:
+            parameters:
+              querystrings:
+                name: true
+  
+  getCurrencyRates:
+    handler: src/get-currency-rate.getCurrencyRates
+    events:
+      - http:
+          path: get-currency-rate
+          method: get
+          cors: true
+
+  updateCurrencyRateTrigger:
+    handler: src/update-currency-rate.updateCurrencyRate
+    events:
+      - http:
+          path: convert-currency
+          method: get
+          cors: true
+
+          request:
+            parameters:
+              querystrings:
+                name: true

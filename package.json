@@ -1,0 +1,36 @@
+{
+  "name": "currency-alarm-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "build": "serverless package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shurygindv/currency-alarm-api.git"
+  },
+  "author": "Daniil_Shurygin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shurygindv/currency-alarm-api/issues"
+  },
+  "homepage": "https://github.com/shurygindv/currency-alarm-api#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-typescript": "^7.12.7",
+    "babel-loader": "^8.2.2",
+    "serverless": "^2.16.1",
+    "serverless-dotenv-plugin": "^3.1.0",
+    "serverless-offline": "^6.8.0",
+    "serverless-webpack": "^5.3.5",
+    "webpack": "^5.11.0",
+    "webpack-node-externals": "^2.5.2"
+  },
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.67",
+    "node-fetch": "^2.6.1"
+  }
+}
