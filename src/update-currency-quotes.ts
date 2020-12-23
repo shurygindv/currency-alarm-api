@@ -36,7 +36,7 @@ const putNewCurrencyQuotesAsync = (data: any) => {
   return dynamoDb.put(params).promise();
 };
 
-export const updateCurrencyRate: APIGatewayProxyHandler = async (_event) => {
+export const updateCurrencyQuotes: APIGatewayProxyHandler = async (_event) => {
   try {
     const [USD, EUR, RUB] = Promise.all(["USD", "EUR", "RUB"].map(fetchRates));
 
@@ -48,7 +48,7 @@ export const updateCurrencyRate: APIGatewayProxyHandler = async (_event) => {
 
     console.info(result);
 
-    return httpResponse.success();
+    return httpResponse.accepted();
   } catch (err) {
     console.error(err);
 

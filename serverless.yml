@@ -55,15 +55,10 @@ functions:
           method: get
           cors: true
 
-  updateCurrencyRateTrigger:
-    handler: src/update-currency-rate.updateCurrencyRate
+  updateCurrencyQuotes:
+    handler: src/update-currency-quotes.updateCurrencyQuotes
     events:
-      - http:
-          path: convert-currency
-          method: get
-          cors: true
-
-          request:
-            parameters:
-              querystrings:
-                name: true
+      - schedule:
+        name: update-currency-quotes-schedule
+        description: 'keep up-to-date currency rates / fetch and save in dynamodb'
+        rate: rate(1 hours)

@@ -1,9 +1,8 @@
-
 type Data = {
-    statusCode: number;
-    headers?: Record<string,string>,
-    body: any;
-}
+  statusCode: number;
+  headers?: Record<string, string>;
+  body: any;
+};
 
 const res = (data: Data) => ({
   statusCode: data.statusCode,
@@ -14,15 +13,31 @@ const res = (data: Data) => ({
 const internalError = (message: string) =>
   res({
     statusCode: 500,
-    body: {message}
+    body: { errorMessage: message, success: false },
   });
 
-const success = <T>(body?: T) => res({
-    body,
-    statusCode: 200
-});
+const validationError = (message: string) =>
+  res({
+    statusCode: 400,
+    body: { errorMessage: message, success: false },
+  });
+
+const success = <T>(body: T) =>
+  res({
+    body: { result: body, success: true },
+    statusCode: 200,
+  });
+
+const accepted = <T>(body?: T) =>
+  res({
+    body: { result: body, success: true },
+    statusCode: 202,
+  });
 
 export const httpResponse = {
   internalError,
+  validationError,
+  //=
   success,
+  accepted,
 };
