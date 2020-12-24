@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      NODE_ENV: production
+      NODE_ENV: development
 
     strategy:
       fail-fast: true
