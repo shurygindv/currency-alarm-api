@@ -19,35 +19,15 @@ interface ConverterApiContract {
   validate(response: Response): boolean;
 }
 
-// prefer plain object style
-const rateExchangesApi: ConverterApiContract = {
-  fetch(): string {
-    throw new Error("Method not implemented.");
-  },
-  normalize({ from, to }: QueryParams, data: any) {
-    const convertedFrom = from.toUpperCase();
-    const convertedTo = to.toUpperCase();
-
-    const key = `${convertedFrom}_${convertedTo}`;
-
-    const result = data.hasOwnProperty(key) ? data[key] : null;
-
-    return {
-      from: convertedFrom,
-      to: convertedTo,
-      result: result,
-    };
-  },
-};
+const API_EXCHANGE_URL = (q: string) => `https://api.exchangeratesapi.io/latest?base=${q}`
 
 const exchangeRateApi: ConverterApiContract = {
   name: "api.exchangeratesapi.io",
+  reliabilityApi: 1,
   fetch(params: QueryParams): string {
-    const from = encodeURIComponent(params.from);
-
-    return fetch(
-      `https://api.exchangeratesapi.io/latest?base=${from}`
-    ).then((res) => res.json());
+    return fetch(API_EXCHANGE_URL(encodeURIComponent(params.from)))
+      .then((res) => res.json())
+      .then(console.info);
   },
   normalize({ from, to }: QueryParams, data: any) {
     const convertedFrom = from.toUpperCase();
@@ -69,18 +49,21 @@ const exchangeRateApi: ConverterApiContract = {
 /// ===========
 
 const FREE_CURRCONV_API_KEY = process.env.FREE_CURRCONV_API_KEY;
+const FREE_CURRCONV_URL = (q: string) =>
+  `https://free.currconv.com/api/v7/convert?q=${q}&compact=ultra&apiKey=${FREE_CURRCONV_API_KEY}`;
 
 const freeCurrencyApi: ConverterApiContract = {
   name: "free.currconv.com",
+  reliabilityApi: 2,
   fetch(params: QueryParams) {
     const from = encodeURIComponent(params.from);
     const to = encodeURIComponent(params.to);
 
-    const q = `${from}_${to}`;
+    const url = FREE_CURRCONV_URL(`${from}_${to}`);
 
-    const url = `https://free.currconv.com/api/v7/convert?q=${q}&compact=ultra&apiKey=${FREE_CURRCONV_API_KEY}`;
-
-    return fetch(url).then((res) => res.json());
+    return fetch(url)
+      .then((res) => res.json())
+      .then(console.info);
   },
   normalize({ from, to }: QueryParams, data: any) {
     const convertedFrom = from.toUpperCase();
@@ -99,12 +82,11 @@ const freeCurrencyApi: ConverterApiContract = {
 };
 
 const converters = [
-  rateExchangesApi,
   exchangeRateApi,
   freeCurrencyApi,
 ] as const;
 
-const isValid = ({ result, from, to }: NormalizedData): boolean => {
+const isOutputValid = ({ result, from, to }: NormalizedData): boolean => {
   return [
     typeof from === "string",
     typeof to === "string",
@@ -118,7 +100,7 @@ export const convertCurrencyApi = async (params: QueryParams) => {
       const data = await converterApi.fetch(params);
       const normalizedData = converterApi.normalize(data);
 
-      if (isValid(normalizedData)) {
+      if (isOutputValid(normalizedData)) {
         return normalizedData;
       }
 

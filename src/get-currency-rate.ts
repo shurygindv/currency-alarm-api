@@ -1,6 +1,7 @@
 import AWS from "aws-sdk";
-
 import type { APIGatewayProxyHandler } from "aws-lambda";
+
+import { httpResponse } from "./libs/http";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -19,21 +20,14 @@ const fetchRates = () => {
 };
 
 export const getCurrencyRates: APIGatewayProxyHandler = async (_event) => {
-  let body;
-
   try {
     const result = await fetchRates();
+    let [body] = result.Items;
 
-    [body] = result.Items;
+    return httpResponse.success(body);
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: { error: err.message },
-    };
-  }
+    console.error(err);
 
-  return {
-    statusCode: 200,
-    body,
-  };
+    return httpResponse.internalError(`Something went wrong`);
+  }
 };
