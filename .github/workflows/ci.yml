@@ -16,8 +16,7 @@ jobs:
         node-version: [12.x]
     steps:
       - name: Report the situation
-        uses: |
-        echo "NODE_ENV=$NODE_ENV".
+        run: echo "::group::pipeline logs" && echo "NODE_ENV=$NODE_ENV"
 
       - name: Jump on main branch
         uses: actions/checkout@v2
@@ -33,4 +32,5 @@ jobs:
       - name: Run tests
         run: npm run test
       
-      - run: echo "I'm fine"
+      - name: Result
+        run: echo "I'm ready and you?"
