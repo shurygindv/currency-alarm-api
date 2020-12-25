@@ -1,8 +1,8 @@
 import AWS from "aws-sdk";
 import fetch from "node-fetch";
-import type { APIGatewayProxyHandler } from "aws-lambda";
 
 import { httpResponse } from "./libs/http";
+import { lambda } from "./libs/lambda";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -17,13 +17,14 @@ const fetchRates = async (base) => {
 
     return json.response;
   } catch (e) {
-      console.info(`api.currencyscoop.com`);
+    console.info(`api.currencyscoop.com`);
 
-      throw e;
+    throw e;
   }
 };
 
-const putNewCurrencyQuotesAsync = (data: any) => {
+
+const updateTableCurrencyQuotesAsync = (data: any) => {
   const params = {
     TableName: process.env.CURRENCY_RATES_TABLE_NAME,
     Item: {
@@ -36,22 +37,15 @@ const putNewCurrencyQuotesAsync = (data: any) => {
   return dynamoDb.put(params).promise();
 };
 
-export const updateCurrencyQuotes: APIGatewayProxyHandler = async (_event) => {
-  try {
-    const [USD, EUR, RUB] = Promise.all(["USD", "EUR", "RUB"].map(fetchRates));
+// scheduled trigger
+export const updateCurrencyQuotes = lambda(async () => {
+  const [USD, EUR, RUB] = await Promise.all(["USD", "EUR", "RUB"].map(fetchRates));
 
-    const result = await putNewCurrencyQuotesAsync({
-      USD,
-      EUR,
-      RUB,
-    });
+  const result = await updateTableCurrencyQuotesAsync({
+    USD,
+    EUR,
+    RUB,
+  });
 
-    console.info(result);
-
-    return httpResponse.accepted();
-  } catch (err) {
-    console.error(err);
-
-    return httpResponse.internalError("Something went wrong");
-  }
-};
+  return httpResponse.accepted(result);
+});

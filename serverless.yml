@@ -15,6 +15,9 @@ provider:
     apiGateway: true
     lambda: true
 
+  environment:
+    EMERGENCY_TOPIC: !Ref EmergencyRoomTopic
+
 package:
   individually: true
 
@@ -62,3 +65,19 @@ functions:
         name: update-currency-quotes-schedule
         description: 'keep up-to-date currency rates / fetch and save in dynamodb'
         rate: rate(1 hours)
+
+resources:
+  Resources:
+    EmergencyRoomTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: Errors
+        TopicName: emergency-room
+
+    # -> https://docs.aws.amazon.com/sns/latest/dg/sns-subscription-filter-policies.html
+    EmergencyRoomEmailSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: !Ref EmergencyRoomTopic
+        Protocol: email
+        Endpoint: Daniil_Shurygin@epam.com

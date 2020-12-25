@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
-import type { APIGatewayProxyHandler } from "aws-lambda";
 
 import { httpResponse } from "./libs/http";
+import { lambda } from "./libs/lambda";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -19,15 +19,10 @@ const fetchRates = () => {
   return dynamoDb.query(params).promise();
 };
 
-export const getCurrencyRates: APIGatewayProxyHandler = async (_event) => {
-  try {
-    const result = await fetchRates();
-    let [body] = result.Items;
+export const getCurrencyRates = lambda(async () => {
+  const result = await fetchRates();
 
-    return httpResponse.success(body);
-  } catch (err) {
-    console.error(err);
+  const [body] = result.Items;
 
-    return httpResponse.internalError(`Something went wrong`);
-  }
-};
+  return httpResponse.success(body);
+});

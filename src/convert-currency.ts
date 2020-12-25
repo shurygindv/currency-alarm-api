@@ -1,14 +1,15 @@
 import { convertCurrencyApi } from "./providers/currency-converter-provider";
+import { chiefProvider } from "./providers/chief-provider";
+
 import { httpResponse } from "./libs/http";
+import { lambda } from "./libs/lambda";
 
 const isInvalidParams = (params) => {
   return !(params.from && params.to && params.amount > 0);
 };
 
-export const convertCurrency = async (event) => {
+export const convertCurrency = lambda(async (event) => {
   const params = event.queryStringParameters || {};
-
-  console.log(params);
 
   if (isInvalidParams(params)) {
     return httpResponse.validationError(`Invalid params`);
@@ -16,19 +17,19 @@ export const convertCurrency = async (event) => {
 
   const { from, to, amount } = params;
 
-  try {
-    const data = await convertCurrencyApi({
-      from,
-      to,
-      amount,
-    });
+  const [data, error] = await convertCurrencyApi({
+    from,
+    to,
+    amount: Number(amount),
+  });
 
-    console.info(data);
-
+  if (data) {
     return httpResponse.success(data);
-  } catch (e) {
-    console.error(e);
-
-    return httpResponse.internalError(`Something went wrong`);
   }
-};
+
+  await chiefProvider.reportAboutError({
+    description: error.message,
+  });
+
+  return httpResponse.internalError("Smth went wrong");
+});

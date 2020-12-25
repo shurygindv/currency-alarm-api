@@ -15,15 +15,13 @@ type QueryParams = {
 interface ConverterApiContract {
   name: string;
   fetch(query: QueryParams): string;
-  normalize(): NormalizedData;
-  validate(response: Response): boolean;
+  normalize(q: QueryParams, response: any): NormalizedData;
 }
 
 const API_EXCHANGE_URL = (q: string) => `https://api.exchangeratesapi.io/latest?base=${q}`
 
 const exchangeRateApi: ConverterApiContract = {
   name: "api.exchangeratesapi.io",
-  reliabilityApi: 1,
   fetch(params: QueryParams): string {
     return fetch(API_EXCHANGE_URL(encodeURIComponent(params.from)))
       .then((res) => res.json())
@@ -54,7 +52,6 @@ const FREE_CURRCONV_URL = (q: string) =>
 
 const freeCurrencyApi: ConverterApiContract = {
   name: "free.currconv.com",
-  reliabilityApi: 2,
   fetch(params: QueryParams) {
     const from = encodeURIComponent(params.from);
     const to = encodeURIComponent(params.to);
@@ -94,24 +91,24 @@ const isOutputValid = ({ result, from, to }: NormalizedData): boolean => {
   ].every(Boolean);
 };
 
-export const convertCurrencyApi = async (params: QueryParams) => {
+export const convertCurrencyApi = async (query: QueryParams) => {
   for (const converterApi of converters) {
     try {
-      const data = await converterApi.fetch(params);
-      const normalizedData = converterApi.normalize(data);
+      const data = await converterApi.fetch(query);
+      const normalizedData = converterApi.normalize(query, data);
 
       if (isOutputValid(normalizedData)) {
-        return normalizedData;
+        return [normalizedData];
       }
 
       console.error(
         `Validation Error: can't process '${convertCurrencyApi.name}' (%s)`,
-        JSON.stringify(params)
+        JSON.stringify(query)
       );
     } catch (e) {
       console.error(e);
     }
   }
 
-  throw new Error("any provider is unavailable");
+  return [, {message: 'seems, converter capabilities are reached' }] as const;
 };
