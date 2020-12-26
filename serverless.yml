@@ -77,9 +77,10 @@ functions:
           path: convert-currency
           method: get
           cors: true
-  
+
+          reqValidatorName: RequestValidator
           request:
-            passThrough: NEVER
+            passThrough: WHEN_NO_TEMPLATES
             parameters:
               querystrings:
                 from: true
@@ -115,16 +116,28 @@ resources:
         Protocol: email
         Endpoint: Daniil_Shurygin@epam.com
 
-
-    # not used yet;
-    RequestParamsValidator:  
+    RequestValidator:  
       Type: "AWS::ApiGateway::RequestValidator"
       Properties:
-        Name: 'RequestParamsValidator'
+        Name: 'request-params-validator'
         RestApiId: 
-          Ref: ApiGatewayRestApi
+          Ref: ApiGatewayRestApi # implicitly
         ValidateRequestBody: true
         ValidateRequestParameters: true  
+
+    InvalidRequestParamsGatewayResponse:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        RestApiId:
+          Ref: ApiGatewayRestApi  # implicitly
+        ResponseType: BAD_REQUEST_PARAMETERS
+        StatusCode: 400
+        ResponseTemplates:
+           application/json: |
+              {
+                "success": false,
+                "message": "$context.error.message",
+              }
 
     CurrencyRatesTable:
       Type: AWS::DynamoDB::Table

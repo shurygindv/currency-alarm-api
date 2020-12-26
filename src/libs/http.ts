@@ -13,13 +13,13 @@ const res = (data: Data) => ({
 const internalError = (message: string) =>
 	res({
 		statusCode: 500,
-		body: { errorMessage: message, success: false },
+		body: { message, success: false },
 	});
 
 const validationError = (message: string) =>
 	res({
 		statusCode: 400,
-		body: { errorMessage: message, success: false },
+		body: { message, success: false },
 	});
 
 const success = <T>(body: T) =>
