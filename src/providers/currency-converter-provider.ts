@@ -26,17 +26,16 @@ const API_EXCHANGE_URL = (q: string) =>
 const exchangeRateApi: ConverterApiContract = {
 	name: 'api.exchangeratesapi.io',
 	fetch(params: QueryParams): string {
-		return fetch(API_EXCHANGE_URL(encodeURIComponent(params.from)))
-			.then(res => res.json());
+		return fetch(API_EXCHANGE_URL(encodeURIComponent(params.from))).then(res =>
+			res.json(),
+		);
 	},
 	normalize({ from, to }: QueryParams, data: any) {
 		const convertedFrom = from.toUpperCase();
 		const convertedTo = to.toUpperCase();
 
 		const rates = data.rates;
-		const value = rates.hasOwnProperty(convertedTo)
-			? rates[convertedTo]
-			: null;
+		const value = rates.hasOwnProperty(convertedTo) ? rates[convertedTo] : null;
 
 		return {
 			from: convertedFrom,
@@ -60,8 +59,7 @@ const freeCurrencyApi: ConverterApiContract = {
 
 		const url = FREE_CURRCONV_URL(`${from}_${to}`);
 
-		return fetch(url)
-			.then(res => res.json());
+		return fetch(url).then(res => res.json());
 	},
 	normalize({ from, to }: QueryParams, data: any) {
 		const convertedFrom = from.toUpperCase();
@@ -79,7 +77,7 @@ const freeCurrencyApi: ConverterApiContract = {
 	},
 };
 
-const converters = [ freeCurrencyApi, exchangeRateApi] as const;
+const converters = [freeCurrencyApi, exchangeRateApi] as const;
 
 const isOutputValid = ({ value, from, to }: NormalizedData): boolean => {
 	return [
@@ -89,7 +87,17 @@ const isOutputValid = ({ value, from, to }: NormalizedData): boolean => {
 	].every(Boolean);
 };
 
-export const convertCurrencyApi = async (query: QueryParams) => {
+
+type DuckError = { message: string };
+
+type Left = NormalizedData;
+type Right = Error | DuckError;
+
+type ConverterResult = [Left?, Right?];
+
+export const convertCurrencyApi = async (
+	query: QueryParams,
+): Promise<ConverterResult> => {
 	for (const converterApi of converters) {
 		try {
 			const data = await converterApi.fetch(query);
@@ -108,5 +116,5 @@ export const convertCurrencyApi = async (query: QueryParams) => {
 		}
 	}
 
-	return [, { message: 'seems, converter capabilities are reached' }] as const;
+	return [, { message: 'seems, converter capabilities are reached' }];
 };

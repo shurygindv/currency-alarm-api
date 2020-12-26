@@ -10,29 +10,23 @@ const res = (data: Data) => ({
 	body: JSON.stringify(data.body),
 });
 
-const internalError = (message: string) =>
+const errorStatusCode = (statusCode: number, msg: string) =>
 	res({
-		statusCode: 500,
-		body: { message, success: false },
+		statusCode: statusCode,
+		body: { message: msg, success: false },
 	});
 
-const validationError = (message: string) =>
+const successStatusCode = <T>(statusCode: number, body: T) =>
 	res({
-		statusCode: 400,
-		body: { message, success: false },
-	});
-
-const success = <T>(body: T) =>
-	res({
+		statusCode: statusCode,
 		body: { result: body, success: true },
-		statusCode: 200,
 	});
 
-const accepted = <T>(body?: T) =>
-	res({
-		body: { result: body, success: true },
-		statusCode: 202,
-	});
+const internalError = (message: string) => errorStatusCode(500, message);
+const validationError = (message: string) => errorStatusCode(400, message);
+
+const success = <T>(body: T) => successStatusCode(200, body);
+const accepted = <T>(body?: T) => successStatusCode(202, body);
 
 export const httpResponse = {
 	internalError,

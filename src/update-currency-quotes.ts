@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import { httpResponse } from './libs/http';
 import { lambda } from './libs/lambda';
 
+// @ts-ignore
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const API_KEY = process.env.RATES_API_KEY;

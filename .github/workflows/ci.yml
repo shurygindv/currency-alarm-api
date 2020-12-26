@@ -64,7 +64,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install NPM dependencies (serverless)
-        run: npm install -g serverless && npm ci
+        run: npm install -g serverless && npm ci --also=dev
 
       - name: Create .env file
         run: |
