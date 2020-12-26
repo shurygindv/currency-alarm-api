@@ -40,19 +40,51 @@ custom:
     required:
       file: true
 
+  documentation: ${file(openAPI.yml)}
+  
 functions:
   convertCurrencyApi:
     handler: src/convert-currency.convertCurrency
     events:
       - http:
+          documentation:
+            summary: "Currency converter"
+            description: "convert FROM -> TO with AMOUNT"
+            tags:
+              - Converter
+              - Currency
+            queryParams:
+              - name: "from"
+                description: "exchange FROM (e.g USD)"
+              - name: "to"
+                description: "exchange TO (e.g RUB)"
+              - name: "amount"
+                description: "without comments (e.g 100)"
+
+            methodResponses:
+              - statusCode: "200"
+                responseModels:
+                  "application/json": "ConverterSuccessResponse"
+
+              - statusCode: "400"
+                responseModels:
+                  "application/json": "400ValidationResponse"
+
+              - statusCode: "500"
+                responseModels:
+                  "application/json": "500InternalError"
+
           path: convert-currency
           method: get
           cors: true
-
+  
           request:
+            passThrough: NEVER
             parameters:
               querystrings:
-                name: true
+                from: true
+                to: true
+                query: true
   
   getCurrencyRates:
     handler: src/get-currency-rate.getCurrencyRates
@@ -82,6 +114,17 @@ resources:
         TopicArn: !Ref EmergencyRoomTopic
         Protocol: email
         Endpoint: Daniil_Shurygin@epam.com
+
+
+    # not used yet;
+    RequestParamsValidator:  
+      Type: "AWS::ApiGateway::RequestValidator"
+      Properties:
+        Name: 'RequestParamsValidator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: true  
 
     CurrencyRatesTable:
       Type: AWS::DynamoDB::Table

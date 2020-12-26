@@ -1,0 +1,69 @@
+api:
+  info:
+    version: '1.0.1'
+    title: CurrencyAlarmAPI
+    description: great ever
+  tags:
+    - Converter
+    - Currency
+
+models:
+  - name: ConverterResult
+    contentType: "application/json"
+    schema:
+      type: object
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+        value:
+          type: number
+
+  - name: ConverterSuccessResponse
+    contentType: "application/json"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: "{{model: ConverterResult}}"
+
+  - name: CurrencyConverterRequest
+    contentType: "application/json"
+    schema:
+      required: 
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+          
+  - name: 500InternalError
+    contentType: "application/json"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+        errorMessage:
+          type: string
+
+  - name: 400ValidationResponse
+    contentType: "application/json"
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+        errorMessage:
+          type: string
+
+commonModelSchemaFragments:
+  MethodResponse400Json:
+    statusCode: '400'
+    responseModels:
+      "application/json": 400JsonResponse
