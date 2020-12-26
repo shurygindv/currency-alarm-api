@@ -62,11 +62,7 @@ functions:
   updateCurrencyQuotesScheduler:
     handler: src/update-currency-quotes.updateCurrencyQuotes
     events:
-      - schedule:
-          name: update-currency-quotes-in-N-hour
-          description: 'pull new quotes -> update table'
-          rate: rate(1 hours)
-          enabled: true
+      - schedule: rate(1 hour) ## TODO strict options 
 
 resources:
   Resources:

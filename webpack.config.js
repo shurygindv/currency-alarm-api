@@ -2,6 +2,8 @@ const path = require('path');
 const slsw = require('serverless-webpack');
 const nodeExternals = require('webpack-node-externals');
 
+const ONE_KB = 1000;
+
 module.exports = {
   context: __dirname,
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
@@ -18,7 +20,17 @@ module.exports = {
     filename: '[name].js',
   },
   target: 'node12.18',
-  externals: [nodeExternals()],
+  externals: [nodeExternals({
+    allowlist: 'node-fetch'
+  })],
+  performance: {
+    maxAssetSize: ONE_KB * 100,
+    hints: 'error'
+  },
+  stats: {
+    performance: true,
+    runtimeModules: true,
+  },
   module: {
     rules: [
       {
