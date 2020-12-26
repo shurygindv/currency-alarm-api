@@ -24,14 +24,16 @@ jobs:
       - name: Install NPM dependencies
         run: npm install -g serverless && npm ci
 
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          ${{ secrets.ENV }}
+          EOF
+
       - name: Configure serverless AWS credentials
         run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
-      - name: Create .env file
-        run: |
-          cat > env.yml << EOF
-          ${{ secrets.ENV }}
-          EOF
+
 
       - name: Deploy app
         run: sls deploy -s dev
@@ -64,14 +66,14 @@ jobs:
       - name: Install NPM dependencies (serverless)
         run: npm install -g serverless && npm ci
 
-      - name: Configure serverless AWS credentials
-        run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      
       - name: Create .env file
         run: |
-          cat > env.yml << EOF
+          cat > .env << EOF
           ${{ secrets.ENV }}
           EOF
 
+      - name: Configure serverless AWS credentials
+        run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
       - name: Run tests
         run: npm run test

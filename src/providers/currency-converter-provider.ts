@@ -1,7 +1,9 @@
 import fetch from 'node-fetch';
 
+// TODO: json constructor
+
 type NormalizedData = {
-	result: number;
+	value: number;
 	from: string;
 	to: string;
 };
@@ -25,22 +27,21 @@ const exchangeRateApi: ConverterApiContract = {
 	name: 'api.exchangeratesapi.io',
 	fetch(params: QueryParams): string {
 		return fetch(API_EXCHANGE_URL(encodeURIComponent(params.from)))
-			.then(res => res.json())
-			.then(console.info);
+			.then(res => res.json());
 	},
 	normalize({ from, to }: QueryParams, data: any) {
 		const convertedFrom = from.toUpperCase();
 		const convertedTo = to.toUpperCase();
 
 		const rates = data.rates;
-		const result = rates.hasOwnProperty(convertedTo)
+		const value = rates.hasOwnProperty(convertedTo)
 			? rates[convertedTo]
 			: null;
 
 		return {
 			from: convertedFrom,
 			to: convertedTo,
-			result,
+			value,
 		};
 	},
 };
@@ -60,8 +61,7 @@ const freeCurrencyApi: ConverterApiContract = {
 		const url = FREE_CURRCONV_URL(`${from}_${to}`);
 
 		return fetch(url)
-			.then(res => res.json())
-			.then(console.info);
+			.then(res => res.json());
 	},
 	normalize({ from, to }: QueryParams, data: any) {
 		const convertedFrom = from.toUpperCase();
@@ -69,23 +69,23 @@ const freeCurrencyApi: ConverterApiContract = {
 
 		const key = `${convertedFrom}_${convertedTo}`;
 
-		const result = data.hasOwnProperty(key) ? data[key] : null;
+		const value = data.hasOwnProperty(key) ? data[key] : null;
 
 		return {
 			from: convertedFrom,
 			to: convertedTo,
-			result: result,
+			value: value,
 		};
 	},
 };
 
-const converters = [exchangeRateApi, freeCurrencyApi] as const;
+const converters = [ freeCurrencyApi, exchangeRateApi] as const;
 
-const isOutputValid = ({ result, from, to }: NormalizedData): boolean => {
+const isOutputValid = ({ value, from, to }: NormalizedData): boolean => {
 	return [
 		typeof from === 'string',
 		typeof to === 'string',
-		Number(result) === result,
+		Number(value) === value,
 	].every(Boolean);
 };
 

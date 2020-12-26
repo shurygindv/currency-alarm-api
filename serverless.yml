@@ -18,6 +18,8 @@ provider:
   environment:
     EMERGENCY_TOPIC: !Ref EmergencyRoomTopic
     CURRENCY_RATES_TABLE_NAME: "CurrencyRatesTable"
+    FREE_CURRCONV_API_KEY: ${env:FREE_CURRCONV_API_KEY}
+    RATES_API_KEY: ${env:RATES_API_KEY}
 
 package:
   individually: true
@@ -25,6 +27,8 @@ package:
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-dynamodb-local
 
 custom:
   webpack:
