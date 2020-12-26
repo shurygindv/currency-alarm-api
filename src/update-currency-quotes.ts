@@ -6,7 +6,7 @@ import { lambda } from './libs/lambda';
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.RATES_API_KEY;
 
 const fetchRates = async base => {
 	const url = `https://api.currencyscoop.com/v1/latest?base=${base}&api_key=${API_KEY}`;
@@ -33,7 +33,9 @@ const updateTableCurrencyQuotesAsync = (data: any) => {
 		},
 	};
 
-	return dynamoDb.put(params).promise();
+	console.info(params);
+
+	return Promise.resolve({}); // dynamoDb.put(params).promise();
 };
 
 // scheduled trigger

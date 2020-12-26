@@ -17,6 +17,7 @@ provider:
 
   environment:
     EMERGENCY_TOPIC: !Ref EmergencyRoomTopic
+    CURRENCY_RATES_TABLE_NAME: "CurrencyRatesTable"
 
 package:
   individually: true
@@ -58,20 +59,21 @@ functions:
           method: get
           cors: true
 
-  updateCurrencyQuotes:
+  updateCurrencyQuotesScheduler:
     handler: src/update-currency-quotes.updateCurrencyQuotes
     events:
       - schedule:
-        name: update-currency-quotes-schedule
-        description: 'keep up-to-date currency rates / fetch and save in dynamodb'
-        rate: rate(1 hours)
+          name: update-currency-quotes-in-N-hour
+          description: 'pull new quotes -> update table'
+          rate: rate(1 hours)
+          enabled: true
 
 resources:
   Resources:
     EmergencyRoomTopic:
       Type: AWS::SNS::Topic
       Properties:
-        DisplayName: Errors
+        DisplayName: Any errors
         TopicName: emergency-room
 
     # -> https://docs.aws.amazon.com/sns/latest/dg/sns-subscription-filter-policies.html
@@ -81,3 +83,22 @@ resources:
         TopicArn: !Ref EmergencyRoomTopic
         Protocol: email
         Endpoint: Daniil_Shurygin@epam.com
+
+    CurrencyRatesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.CURRENCY_RATES_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: currencyType
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: currencyType
+            KeyType: RANGE # same partition
+        ProvisionedThroughput:
+           ReadCapacityUnits: 1
+           WriteCapacityUnits: 1

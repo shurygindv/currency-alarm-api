@@ -3,12 +3,47 @@ name: currency-alarm-api-ci
 on: [push]
 
 jobs:
+  deploy-dev-stage:
+    name: deploy (dev-stage)
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    env:
+      NODE_ENV: production
+      CI: true
+
+    strategy:
+      fail-fast: true
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install NPM dependencies
+        run: npm install -g serverless && npm ci
+
+      - name: Configure serverless AWS credentials
+        run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
+      - name: Create .env file
+        run: |
+          cat > env.yml << EOF
+          ${{ secrets.ENV }}
+          EOF
+
+      - name: Deploy app
+        run: sls deploy -s dev
+
+###############################      
   test:
-    name: app-work-properly
+    name: run tests
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      NODE_ENV: development
+      NODE_ENV: production
+      CI: true
 
     strategy:
       fail-fast: true
@@ -16,9 +51,9 @@ jobs:
         node-version: [12.x]
     steps:
       - name: Report the situation
-        run: echo "::group::pipeline logs" && echo "NODE_ENV=$NODE_ENV"
+        run: echo "::group::pipeline logs"
 
-      - name: Jump on main branch
+      - name: Checkout (main branch)
         uses: actions/checkout@v2
 
       - name: Setup Node.js ${{ matrix.node-version }} env
@@ -26,11 +61,17 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies and build app
-        run: npm i && npm run build
+      - name: Install NPM dependencies (serverless)
+        run: npm install -g serverless && npm ci
+
+      - name: Configure serverless AWS credentials
+        run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      
+      - name: Create .env file
+        run: |
+          cat > env.yml << EOF
+          ${{ secrets.ENV }}
+          EOF
 
       - name: Run tests
         run: npm run test
-      
-      - name: Result
-        run: echo "I'm ready and you?"

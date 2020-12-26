@@ -10,11 +10,13 @@ const fetchRates = () => {
 		TableName: process.env.CURRENCY_RATES_TABLE_NAME,
 		KeyConditionExpression: 'id = :t',
 		ExpressionAttributeValues: {
-			':t': 'usd-eur',
+			':t': 'usd-eur', // hard=code todo
 		},
 		ScanIndexForward: false,
 		limit: 1,
 	};
+
+	console.info(params);
 
 	return dynamoDb.query(params).promise();
 };

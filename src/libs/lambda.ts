@@ -2,7 +2,7 @@ import type { APIGatewayProxyHandler } from 'aws-lambda';
 
 import { httpResponse } from './http';
 
-export const lambda = (fn: APIGatewayProxyHandler) => event => {
+export const lambda = (fn: APIGatewayProxyHandler) => async event => {
 	console.info('=============');
 
 	console.group('lambda handler');
