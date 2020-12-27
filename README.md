@@ -3,3 +3,16 @@
 serverless back-end for `Flutter app` https://github.com/shurygindv/currency-alarm
 
 `Platform:` Node.js 12.x.x AWS services
+
+### Tech
+
+* AWS Lambda
+* AWS DynamoDB
+* AWS SNS
+* AWS EventBridge (scheduler)
+* Third-party services for actual rate
+
+
+### Using
+ 
+`git clone this` and `sls deploy -s dev` voila
