@@ -11,8 +11,3 @@ serverless back-end for `Flutter app` https://github.com/shurygindv/currency-ala
 * AWS SNS
 * AWS EventBridge (scheduler)
 * Third-party services for actual rate
-
-
-### Using
- 
-`git clone this` and `sls deploy -s dev` voila
