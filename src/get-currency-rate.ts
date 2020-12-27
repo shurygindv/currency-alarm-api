@@ -3,9 +3,9 @@ import AWS from 'aws-sdk';
 import { httpResponse } from './libs/http';
 import { lambda } from './libs/lambda';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
 const fetchRates = () => {
+	const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
 	const params = {
 		TableName: process.env.CURRENCY_RATES_TABLE_NAME,
 		KeyConditionExpression: 'id = :t',
