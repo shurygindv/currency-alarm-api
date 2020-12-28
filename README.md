@@ -4,11 +4,11 @@ serverless back-end for `Flutter app` https://github.com/shurygindv/currency-ala
 
 `Platform:` Node.js 12.x.x AWS services
 
-### usage
+### Usage
 
 run: `serverless deploy -s dev`
 
-### intro
+### Intro
 
 `GET` - https://.execute-api.eu-west-1.amazonaws.com/dev/convert-currency
 * convert `from` -> `to` with `amount`: `/dev/convert-currency?from=USD&to=RUB&amount=100`
@@ -16,7 +16,7 @@ run: `serverless deploy -s dev`
 `GET` - https://.execute-api.eu-west-1.amazonaws.com/dev/get-currency-rate
 * rate info by `base`: `/dev/get-currency-rate?base=USD`
 
-### stack
+### Stack
 * AWS Lambda
 * AWS DynamoDb
 * AWS APIGateway
@@ -24,13 +24,13 @@ run: `serverless deploy -s dev`
 * `...`
 
 
-### required iam permissions (granting access)
+### Required iam permissions (granting access)
 
 * AWS CloudFormation
 * AWS S3 
 * AWS IAM readonly 
 * AWS API Gateway Administrator
 
-### deployment
+### Deployment (CI&CD)
 
 see `.github/workflows/ci.yml` file for details
