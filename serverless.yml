@@ -170,18 +170,18 @@ resources:
 
     CurrencyRatesTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: DELETE
       Properties:
         TableName: ${self:provider.environment.CURRENCY_RATES_TABLE_NAME}
         AttributeDefinitions:
-          - AttributeName: date
-            AttributeType: S
           - AttributeName: currencyType
+            AttributeType: S
+          - AttributeName: date
             AttributeType: S
         KeySchema:
-          - AttributeName: date
-            KeyType: HASH
           - AttributeName: currencyType
+            KeyType: HASH
+          - AttributeName: date
             KeyType: RANGE # same partition
         ProvisionedThroughput:
            ReadCapacityUnits: 1

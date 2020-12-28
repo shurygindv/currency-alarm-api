@@ -19,7 +19,7 @@ type CurrencyScoopResponse = {
 };
 
 // TODO: dynamob transactions
-const saveRateInDatabase = (
+const updateRateInDbByType = (
 	type: CurrencyType,
 	relateRates: Record<CurrencyType, number>,
 ) => {
@@ -62,7 +62,7 @@ export const updateCurrencyQuotes = lambda(async () => {
 	for (const type of availableCurrencies) {
 		const rate = await fetchRates(type);
 
-		await saveRateInDatabase(type, rate);
+		await updateRateInDbByType(type, rate);
 	}
 
 	return httpResponse.accepted();
