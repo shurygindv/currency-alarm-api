@@ -1,0 +1,122 @@
+---
+swagger: "2.0"
+info:
+  version: "2020-12-28T18:37:27Z"
+  title: "currency-alarm-api-dev"
+host: ".execute-api.eu-west-1.amazonaws.com"
+basePath: "/dev"
+schemes:
+- "https"
+paths:
+  /convert-currency:
+    get:
+      parameters:
+      - name: "amount"
+        in: "query"
+        required: true
+        type: "string"
+      - name: "from"
+        in: "query"
+        required: true
+        type: "string"
+      - name: "to"
+        in: "query"
+        required: true
+        type: "string"
+      responses: 
+        '200': 
+          description: 'OK',
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: 
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      value:
+                        type: number
+        '400': 
+          description: validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: 
+                    type: boolean
+                  message:
+                    type: string
+    options:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"
+  /get-currency-rate:
+    get:
+      parameters:
+      - name: "base"
+        in: "query"
+        required: true
+        type: "string"
+      responses: 
+        '200': 
+          description: 'OK',
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: 
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      currencyType:
+                        type: string
+                      date:
+                        type: string
+                      rates:
+                        type: object
+        '400': 
+          description: validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: 
+                    type: boolean
+                  message:
+                    type: string
+    options:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+            Access-Control-Allow-Methods:
+              type: "string"
+            Access-Control-Allow-Headers:
+              type: "string"

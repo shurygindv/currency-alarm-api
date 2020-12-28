@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import { API_PATHS } from '../api';
 
 // TODO: json constructor
-// prefer simple object schemes
+// prefer simple object schemes over classes
 
 type NormalizedData = {
 	value: number;

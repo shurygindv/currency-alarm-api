@@ -17,6 +17,7 @@ FREE_CURRCONV_API_KEY=******
 `FREE_CURRCONV_API_KEY` (****** signed key by https://www.currencyconverterapi.com/)
 
 **2.** Run `serverless deploy -s dev`
+
 ### API 
 
 There is `swagger.yml`
@@ -40,6 +41,8 @@ There is `swagger.yml`
 * AWS CloudFormation
 * AWS S3 
 * AWS IAM readonly 
+* AWS Lambda
+* AWS SNS
 * AWS API Gateway Administrator
 
 ### Deployment (CI&CD)

@@ -9,6 +9,15 @@ type Params = {
 	base: CurrencyType;
 };
 
+type RateResponse = {
+	result: {
+		currencyType: CurrencyType,
+		date: string,
+		rates: Record<CurrencyType, number>
+	},
+	success: boolean
+}
+
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 const fetchRates = (currencyType: CurrencyType) => {
@@ -38,8 +47,7 @@ export const getCurrencyRates = lambda(async event => {
 	}
 
 	const result = await fetchRates(params.base);
-	console.log(result);
-	const [body] = result.Items;
+	const [data] = result.Items as RateResponse[];
 
-	return httpResponse.success(body);
+	return httpResponse.success(data || null);
 });

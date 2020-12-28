@@ -1,7 +1,7 @@
 {
   "name": "currency-alarm-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple API",
   "main": "index.js",
   "scripts": {
     "test": "sls invoke test -s dev",

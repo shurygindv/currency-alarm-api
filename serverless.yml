@@ -52,7 +52,7 @@ custom:
     required:
       file: true
 
-  documentation: ${file(openAPI.yml)}
+  documentation: ${file(docs.yml)}
   
 functions:
   convertCurrency:
