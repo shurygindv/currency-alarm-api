@@ -16,6 +16,7 @@ const fetchRates = async base => {
 		const result = await fetch(url);
 		const json = await result.json();
 
+			console.log(json);
 		return json.response;
 	} catch (e) {
 		console.info(`api.currencyscoop.com`);
