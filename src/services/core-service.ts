@@ -21,7 +21,7 @@ const parametrized = (payload: Report) => ({
 	Subject: `[API] ACHTUNG! Help me, we are falling`,
 });
 
-export const chiefProvider = {
+export const coreService = {
 	reportAboutError(report: Report) {
 		const sns = new AWS.SNS();
 

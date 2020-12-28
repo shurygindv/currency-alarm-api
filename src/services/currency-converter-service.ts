@@ -1,6 +1,9 @@
 import fetch from 'node-fetch';
 
+import { API_PATHS } from '../api';
+
 // TODO: json constructor
+// prefer simple object style
 
 type NormalizedData = {
 	value: number;
@@ -20,15 +23,12 @@ interface ConverterApiContract {
 	normalize(q: QueryParams, response: any): NormalizedData;
 }
 
-const API_EXCHANGE_URL = (q: string) =>
-	`https://api.exchangeratesapi.io/latest?base=${q}`;
-
 const exchangeRateApi: ConverterApiContract = {
 	name: 'api.exchangeratesapi.io',
 	fetch(params: QueryParams): string {
-		return fetch(API_EXCHANGE_URL(encodeURIComponent(params.from))).then(res =>
-			res.json(),
-		);
+		const query = encodeURIComponent(params.from);
+
+		return fetch(API_PATHS.exchangeConverter(query)).then(res => res.json());
 	},
 	normalize({ from, to }: QueryParams, data: any) {
 		const convertedFrom = from.toUpperCase();
@@ -47,17 +47,13 @@ const exchangeRateApi: ConverterApiContract = {
 
 /// ===========
 
-const FREE_CURRCONV_API_KEY = process.env.FREE_CURRCONV_API_KEY;
-const FREE_CURRCONV_URL = (q: string) =>
-	`https://free.currconv.com/api/v7/convert?q=${q}&compact=ultra&apiKey=${FREE_CURRCONV_API_KEY}`;
-
 const freeCurrencyApi: ConverterApiContract = {
 	name: 'free.currconv.com',
 	fetch(params: QueryParams) {
 		const from = encodeURIComponent(params.from);
 		const to = encodeURIComponent(params.to);
 
-		const url = FREE_CURRCONV_URL(`${from}_${to}`);
+		const url = API_PATHS.freeCurrConverter(`${from}_${to}`);
 
 		return fetch(url).then(res => res.json());
 	},
@@ -87,7 +83,6 @@ const isOutputValid = ({ value, from, to }: NormalizedData): boolean => {
 	].every(Boolean);
 };
 
-
 type DuckError = { message: string };
 
 type Left = NormalizedData;
@@ -95,7 +90,7 @@ type Right = Error | DuckError;
 
 type ConverterResult = [Left?, Right?];
 
-export const convertCurrencyApi = async (
+export const convertCurrencyService = async (
 	query: QueryParams,
 ): Promise<ConverterResult> => {
 	for (const converterApi of converters) {
@@ -108,7 +103,7 @@ export const convertCurrencyApi = async (
 			}
 
 			console.error(
-				`Validation Error: can't process '${convertCurrencyApi.name}' (%s)`,
+				`Validation Error: can't process '${converterApi.name}' (%s)`,
 				JSON.stringify(query),
 			);
 		} catch (e) {

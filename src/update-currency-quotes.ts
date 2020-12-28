@@ -4,53 +4,66 @@ import fetch from 'node-fetch';
 import { httpResponse } from './libs/http';
 import { lambda } from './libs/lambda';
 
-// @ts-ignore
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+import { API_PATHS, CurrencyType } from './api';
 
-const API_KEY = process.env.RATES_API_KEY;
+// @ts-ignore
+type CurrencyScoopResponse = {
+	meta: {
+		code: number;
+	};
+	response: {
+		date: string;
+		base: CurrencyType;
+		rates: Record<CurrencyType, number>;
+	};
+};
+
+// TODO: dynamob transactions
+const saveRateInDatabase = (
+	type: CurrencyType,
+	relateRates: Record<CurrencyType, number>,
+) => {
+	const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+	const params = {
+		TableName: process.env.CURRENCY_RATES_TABLE_NAME,
+		Item: {
+			currencyType: type,
+			date: new Date().toISOString(),
+			rates: relateRates,
+		},
+	};
+
+	return dynamoDb.put(params).promise();
+};
 
 const fetchRates = async base => {
-	const url = `https://api.currencyscoop.com/v1/latest?base=${base}&api_key=${API_KEY}`;
-
 	try {
-		const result = await fetch(url);
-		const json = await result.json();
+		const result = await fetch(API_PATHS.currencyscoop(base));
+		const json = (await result.json()) as CurrencyScoopResponse;
 
-			console.log(json);
-		return json.response;
+		return json.response.rates;
 	} catch (e) {
-		console.info(`api.currencyscoop.com`);
+		console.error(e);
+		console.info('api.currencyscoop.com');
 
 		throw e;
 	}
 };
 
-const updateTableCurrencyQuotesAsync = (data: any) => {
-	const params = {
-		TableName: process.env.CURRENCY_RATES_TABLE_NAME,
-		Item: {
-			id: 'usd-eur',
-			date: new Date().toISOString(),
-			data,
-		},
-	};
-
-	console.info(params);
-
-	return Promise.resolve({}); // dynamoDb.put(params).promise();
-};
+const availableCurrencies = [
+	CurrencyType.USD,
+	CurrencyType.EUR,
+	CurrencyType.RUB,
+];
 
 // scheduled trigger
 export const updateCurrencyQuotes = lambda(async () => {
-	const [USD, EUR, RUB] = await Promise.all(
-		['USD', 'EUR', 'RUB'].map(fetchRates),
-	);
+	for (const type of availableCurrencies) {
+		const rate = await fetchRates(type);
 
-	const result = await updateTableCurrencyQuotesAsync({
-		USD,
-		EUR,
-		RUB,
-	});
+		await saveRateInDatabase(type, rate);
+	}
 
-	return httpResponse.accepted(result);
+	return httpResponse.accepted();
 });

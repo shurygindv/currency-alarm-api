@@ -1,11 +1,27 @@
-import { convertCurrencyApi } from './providers/currency-converter-provider';
-import { chiefProvider } from './providers/chief-provider';
+import { convertCurrencyService } from './services/currency-converter-service';
+import { coreService } from './services/core-service';
 
 import { httpResponse } from './libs/http';
 import { lambda } from './libs/lambda';
 
-const isInvalidParams = params => {
+type QueryParams = {
+	from: string;
+	to: string;
+	amount: number;
+};
+
+const isInvalidParams = (params: Partial<QueryParams>) => {
 	return !(params.from && params.to && params.amount > 0);
+};
+
+const callConverterService = (params: QueryParams) => {
+	const { from, to, amount } = params;
+
+	return convertCurrencyService({
+		from,
+		to,
+		amount: Number(amount),
+	});
 };
 
 export const convertCurrency = lambda(async event => {
@@ -15,19 +31,14 @@ export const convertCurrency = lambda(async event => {
 		return httpResponse.validationError(`Invalid params`);
 	}
 
-	const { from, to, amount } = params;
-
-	const [data, error] = await convertCurrencyApi({
-		from,
-		to,
-		amount: Number(amount),
-	});
+	// @ts-expect-error
+	const [data, error] = await callConverterService(params);
 
 	if (data) {
 		return httpResponse.success(data);
 	}
 
-	await chiefProvider.reportAboutError({
+	await coreService.reportAboutError({
 		description: error.message,
 	});
 

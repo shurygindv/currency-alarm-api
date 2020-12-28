@@ -9,9 +9,12 @@ const wrapped = lambdaWrapper.wrap(mod, { handler: 'getCurrencyRates' });
 const stubRate = {};
 
 const dynamoDocInstance = {
-	query: jest.fn(() => ({ promise: () => Promise.resolve({
-    Items: [stubRate]
-  }) })),
+	query: jest.fn(() => ({
+		promise: () =>
+			Promise.resolve({
+				Items: [stubRate],
+			}),
+	})),
 };
 
 jest.mock('aws-sdk', () => ({
@@ -19,6 +22,13 @@ jest.mock('aws-sdk', () => ({
 		DocumentClient: jest.fn(() => dynamoDocInstance),
 	},
 }));
+
+const validationErrorResponse = {
+	statusCode: 400,
+	headers: undefined,
+	body: '{"message":"Invalid params","success":false}',
+};
+
 
 describe('[base] getCurrencyRates', () => {
 	beforeAll(done => {
@@ -28,27 +38,18 @@ describe('[base] getCurrencyRates', () => {
 	});
 
 	afterEach(async () => {
-    await dynamoDocInstance.query.mockClear();
+		await dynamoDocInstance.query.mockClear();
 	});
 
 	it('should run lambda', () => {
 		return wrapped.run({}).then(response => {
 			expect(response).toBeDefined();
 		});
-  });
-  
-  it('should call dynamodb', async () => {
-		return wrapped.run({}).then(() => {
-			expect(dynamoDocInstance.query).toHaveBeenCalledTimes(1);
-		});
-  });
-  
-  it('should say `internalError` if smth went wrong`', () => {
-    // @ts-expect-error
-    dynamoDocInstance.query.mockImplementation(() => Promise.resolve(null));
+	});
 
-		return wrapped.run({}).then(() => {
-			expect(dynamoDocInstance.query).toHaveBeenCalledTimes(1);
+	it('should validationError when invalid `base` query', () => {
+		return wrapped.run({}).then((res) => {
+			expect(res).toMatchObject(validationErrorResponse);
 		});
-  });
+	});
 });

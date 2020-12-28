@@ -29,6 +29,7 @@ plugins:
   - serverless-dotenv-plugin
   - serverless-dynamodb-local
   - serverless-jest-plugin
+  - serverless-reqvalidator-plugin
 
 custom:
   webpack:
@@ -81,7 +82,7 @@ functions:
 
           reqValidatorName: RequestValidator
           request:
-            passThrough: WHEN_NO_TEMPLATES
+            passThrough: NEVER
             parameters:
               querystrings:
                 from: true
@@ -92,9 +93,26 @@ functions:
     handler: src/get-currency-rate.getCurrencyRates
     events:
       - http:
-          path: get-currency-rate
+          documentation:
+            summary: "Get Currency Rate"
+            description: "get rate by BASE"
+            tags:
+              - Rate
+              - Currency
+            queryParams:
+              - name: "base"
+                description: "base unit"
+
+          path: get-currency-rate # /rate/{base}, todo, later
           method: get
           cors: true
+
+          reqValidatorName: RequestValidator
+          request:
+            passThrough: NEVER
+            parameters:
+              querystrings:
+                base: true
 
   updateCurrencyQuotesScheduler:
     handler: src/update-currency-quotes.updateCurrencyQuotes
@@ -146,12 +164,12 @@ resources:
       Properties:
         TableName: ${self:provider.environment.CURRENCY_RATES_TABLE_NAME}
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: date
             AttributeType: S
           - AttributeName: currencyType
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: date
             KeyType: HASH
           - AttributeName: currencyType
             KeyType: RANGE # same partition

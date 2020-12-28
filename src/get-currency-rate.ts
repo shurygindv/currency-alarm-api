@@ -3,14 +3,20 @@ import AWS from 'aws-sdk';
 import { httpResponse } from './libs/http';
 import { lambda } from './libs/lambda';
 
-const fetchRates = () => {
-	const dynamoDb = new AWS.DynamoDB.DocumentClient();
+import { CurrencyType } from './api';
 
+type Params = {
+	base: CurrencyType;
+};
+
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+const fetchRates = (currencyType: CurrencyType) => {
 	const params = {
 		TableName: process.env.CURRENCY_RATES_TABLE_NAME,
-		KeyConditionExpression: 'id = :t',
+		KeyConditionExpression: 'currencyType = :v',
 		ExpressionAttributeValues: {
-			':t': 'usd-eur', // hard=code todo
+			':v': currencyType,
 		},
 		ScanIndexForward: false,
 		limit: 1,
@@ -21,9 +27,18 @@ const fetchRates = () => {
 	return dynamoDb.query(params).promise();
 };
 
-export const getCurrencyRates = lambda(async () => {
-	const result = await fetchRates();
+const isInvalidParams = (v: string) => !v;
 
+export const getCurrencyRates = lambda(async event => {
+	// @ts-expect-error
+	const params: Params = event.queryStringParameters || {};
+
+	if (isInvalidParams(params.base)) {
+		return httpResponse.validationError(`Invalid params`);
+	}
+
+	const result = await fetchRates(params.base);
+	console.log(result);
 	const [body] = result.Items;
 
 	return httpResponse.success(body);
