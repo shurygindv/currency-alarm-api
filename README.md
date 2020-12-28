@@ -1,4 +1,5 @@
 ## Currency Alarm API
+![currency alarm API CI](https://github.com/shurygindv/currency-alarm-api/workflows/currency-alarm-api-ci/badge.svg?branch=main)
 
 serverless back-end for `Flutter app` https://github.com/shurygindv/currency-alarm
 
