@@ -6,9 +6,20 @@ serverless back-end for `Flutter app` https://github.com/shurygindv/currency-ala
 
 ### Usage
 
-run: `serverless deploy -s dev`
+**1.** Put `.env` file into a root directory, prefilled as here:
+```js
+RATES_API_KEY=******
+FREE_CURRCONV_API_KEY=******
+```
 
-### Intro
+`RATES_API_KEY` (****** signed key  by https://currencyscoop.com/)
+
+`FREE_CURRCONV_API_KEY` (****** signed key by https://www.currencyconverterapi.com/)
+
+**2.** Run `serverless deploy -s dev`
+### API 
+
+There is `swagger.yml`
 
 `GET` - https://.execute-api.eu-west-1.amazonaws.com/dev/convert-currency
 * convert `from` -> `to` with `amount`: `/dev/convert-currency?from=USD&to=RUB&amount=100`
