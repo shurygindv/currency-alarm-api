@@ -82,12 +82,12 @@ functions:
 
           reqValidatorName: RequestValidator
           request:
-            passThrough: NEVER
+            passThrough: WHEN_NO_TEMPLATES
             parameters:
               querystrings:
                 from: true
                 to: true
-                query: true
+                amount: true
   
   getCurrencyRates:
     handler: src/get-currency-rate.getCurrencyRates
@@ -109,7 +109,7 @@ functions:
 
           reqValidatorName: RequestValidator
           request:
-            passThrough: NEVER
+            passThrough: WHEN_NO_TEMPLATES
             parameters:
               querystrings:
                 base: true

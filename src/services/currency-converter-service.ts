@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import { API_PATHS } from '../api';
 
 // TODO: json constructor
-// prefer simple object style
+// prefer simple object schemes
 
 type NormalizedData = {
 	value: number;
@@ -25,6 +25,7 @@ interface ConverterApiContract {
 
 const exchangeRateApi: ConverterApiContract = {
 	name: 'api.exchangeratesapi.io',
+
 	fetch(params: QueryParams): string {
 		const query = encodeURIComponent(params.from);
 
@@ -49,6 +50,7 @@ const exchangeRateApi: ConverterApiContract = {
 
 const freeCurrencyApi: ConverterApiContract = {
 	name: 'free.currconv.com',
+	
 	fetch(params: QueryParams) {
 		const from = encodeURIComponent(params.from);
 		const to = encodeURIComponent(params.to);

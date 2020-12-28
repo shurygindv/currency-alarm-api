@@ -14,9 +14,7 @@ const isInvalidParams = (params: Partial<QueryParams>) => {
 	return !(params.from && params.to && params.amount > 0);
 };
 
-const callConverterService = (params: QueryParams) => {
-	const { from, to, amount } = params;
-
+const callConverterService = ({ from, to, amount }: QueryParams) => {
 	return convertCurrencyService({
 		from,
 		to,
