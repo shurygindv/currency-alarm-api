@@ -14,8 +14,18 @@ provider:
     apiGateway: true
     lambda: true
 
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+      - dynamodb:DescribeTable
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      Resource: !GetAtt CurrencyRatesTable.Arn
+
   environment:
-    EMERGENCY_TOPIC: !Ref EmergencyRoomTopic
+    EXCEPTION_REPORT_TOPIC_ARN: !Ref ExceptionReportTopic
     CURRENCY_RATES_TABLE_NAME: "CurrencyRatesTable"
     FREE_CURRCONV_API_KEY: ${env:FREE_CURRCONV_API_KEY}
     RATES_API_KEY: ${env:RATES_API_KEY}
@@ -121,17 +131,17 @@ functions:
 
 resources:
   Resources:
-    EmergencyRoomTopic:
+    ExceptionReportTopic:
       Type: AWS::SNS::Topic
       Properties:
-        DisplayName: Any errors
-        TopicName: emergency-room
+        DisplayName: "[CurrencyAPI Subscription] Exception reports"
+        TopicName: exception-reports
 
     # -> https://docs.aws.amazon.com/sns/latest/dg/sns-subscription-filter-policies.html
-    EmergencyRoomEmailSubscription:
+    ExceptionReportEmailSubscription:
       Type: AWS::SNS::Subscription
       Properties:
-        TopicArn: !Ref EmergencyRoomTopic
+        TopicArn: !Ref ExceptionReportTopic
         Protocol: email
         Endpoint: Daniil_Shurygin@epam.com
 

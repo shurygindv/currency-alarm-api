@@ -17,7 +17,7 @@ const handleResult = (e: Error) => {
 
 const parametrized = (payload: Report) => ({
 	Message: JSON.stringify(payload),
-	TopicArn: process.env.EMERGENCY_TOPIC,
+	TopicArn: process.env.EXCEPTION_REPORT_TOPIC_ARN,
 	Subject: `[API] ACHTUNG! Help me, we are falling`,
 });
 
