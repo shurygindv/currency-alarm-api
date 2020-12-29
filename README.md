@@ -39,14 +39,13 @@ There is `swagger.yml`
 
 ### Required iam permissions (granting access)
 
+There is common `iam-policy.json` version for details
+
 * AWS CloudFormation
-* AWS S3 
-* AWS IAM readonly 
-* AWS Cloudwatch logs
-* AWS Lambda
+* AWS S3
 * AWS SNS
-* AWS DynamoDb
 * AWS API Gateway Administrator
+* `...`
 
 ### Deployment (CI&CD)
 

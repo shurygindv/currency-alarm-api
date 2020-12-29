@@ -170,7 +170,7 @@ resources:
 
     CurrencyRatesTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         TableName: ${self:provider.environment.CURRENCY_RATES_TABLE_NAME}
         AttributeDefinitions:
