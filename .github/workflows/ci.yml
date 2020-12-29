@@ -24,6 +24,9 @@ jobs:
       - name: Install NPM dependencies
         run: npm install -g serverless && npm ci
 
+      - name: NPM audit
+        run: npm audit --audit-level high
+
       - name: Create .env file
         run: |
           cat > .env << EOF
@@ -33,8 +36,6 @@ jobs:
       - name: Configure serverless AWS credentials
         run: sls config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
-
-
       - name: Deploy app
         run: sls deploy -s dev
 
