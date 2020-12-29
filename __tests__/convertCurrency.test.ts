@@ -45,13 +45,13 @@ describe('[base] convertCurrency', () => {
 		});
 	});
 
-	it('should validationError when invalid query [1]', () => {
+	it('[validation] should fail when invalid query [1]', () => {
 		return wrapped.run({}).then(response => {
 			expect(response).toMatchObject(validationErrorResponse);
 		});
 	});
 
-	it('should validationError when invalid query [2]', () => {
+	it('[validation] should fail when invalid query [2]', () => {
 		const params = {
 			queryStringParameters: {
 				from: 'usd',
@@ -65,7 +65,7 @@ describe('[base] convertCurrency', () => {
 		});
 	});
 
-	it('should validationError when invalid query [3]', () => {
+	it('[validation] should fail when invalid query [3]', () => {
 		const params = {
 			queryStringParameters: {
 				from: null,
@@ -79,7 +79,7 @@ describe('[base] convertCurrency', () => {
 		});
 	});
 
-	it('should validationError when invalid query [3]', () => {
+	it('[validation] should fail when invalid query [3]', () => {
 		const params = {
 			queryStringParameters: {
 				from: 'usd',
@@ -93,7 +93,7 @@ describe('[base] convertCurrency', () => {
 		});
 	});
 
-	it('should validationError when invalid query [4]', () => {
+	it('[validation] should fail when invalid query [4]', () => {
 		const params = {
 			queryStringParameters: {
 				from: 'usd',
@@ -107,7 +107,7 @@ describe('[base] convertCurrency', () => {
 		});
 	});
 
-	it('should call converter-api when a correct query', () => {
+	it('[api] should call converter-api when a correct query', () => {
 		const params = {
 			queryStringParameters: {
 				from: 'usd',
@@ -131,7 +131,7 @@ describe('[base] convertCurrency', () => {
 		});
 	});
 
-	it('shouldn`t panic when unexpected behavior (call SNS)', () => {
+	it('[api] shouldn`t panic when unexpected behavior (call SNS)', () => {
 		const params = {
 			queryStringParameters: {
 				from: 'usd',

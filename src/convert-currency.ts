@@ -23,13 +23,12 @@ const callConverterService = ({ from, to, amount }: QueryParams) => {
 };
 
 export const convertCurrency = lambda(async event => {
-	const params = event.queryStringParameters || {};
+	const params = Object(event.queryStringParameters);
 
 	if (isInvalidParams(params)) {
 		return httpResponse.validationError(`Invalid params`);
 	}
 
-	// @ts-expect-error
 	const [data, error] = await callConverterService(params);
 
 	if (data) {

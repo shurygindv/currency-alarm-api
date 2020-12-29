@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import { httpResponse } from './libs/http';
 import { lambda } from './libs/lambda';
 
-import { API_PATHS, CurrencyType } from './api';
+import { API_PATHS, CurrencyType } from './core/config';
 
 // @ts-ignore
 type CurrencyScoopResponse = {

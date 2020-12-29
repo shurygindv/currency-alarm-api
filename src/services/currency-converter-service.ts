@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-import { API_PATHS } from '../api';
+import { API_PATHS } from '../core/config';
 
 // TODO: json constructor
 // prefer simple object schemes over classes

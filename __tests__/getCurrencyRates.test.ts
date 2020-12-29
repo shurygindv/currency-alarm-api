@@ -47,7 +47,17 @@ describe('[base] getCurrencyRates', () => {
 		});
 	});
 
-	it('should validationError when invalid `base` query', () => {
+	it('[validation] should fail when invalid `base` query', () => {
+		const params = {
+			queryStringParameters: {base: ';select *'}
+		};
+
+		return wrapped.run(params).then((res) => {
+			expect(res).toMatchObject(validationErrorResponse);
+		});
+	});
+
+	it('[validation] should fail when invalid `base` query', () => {
 		return wrapped.run({}).then((res) => {
 			expect(res).toMatchObject(validationErrorResponse);
 		});

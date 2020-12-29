@@ -3,7 +3,7 @@ import AWS from 'aws-sdk';
 import { httpResponse } from './libs/http';
 import { lambda } from './libs/lambda';
 
-import { CurrencyType } from './api';
+import { CurrencyType } from './core/config';
 
 type Params = {
 	base: CurrencyType;
@@ -36,11 +36,14 @@ const fetchRates = (currencyType: CurrencyType) => {
 	return dynamoDb.query(params).promise();
 };
 
-const isInvalidParams = (v: string) => !v;
+const isInvalidParams = (v: string) => !(v && [
+	CurrencyType.USD.toString(),
+	CurrencyType.RUB.toString(),
+	CurrencyType.RUB.toString(),
+].includes(v));
 
 export const getCurrencyRates = lambda(async event => {
-	// @ts-expect-error
-	const params: Params = event.queryStringParameters || {};
+	const params: Params = Object(event.queryStringParameters);
 
 	if (isInvalidParams(params.base)) {
 		return httpResponse.validationError(`Invalid params`);
