@@ -42,8 +42,10 @@ There is `swagger.yml`
 * AWS CloudFormation
 * AWS S3 
 * AWS IAM readonly 
+* AWS Cloudwatch logs
 * AWS Lambda
 * AWS SNS
+* AWS DynamoDb
 * AWS API Gateway Administrator
 
 ### Deployment (CI&CD)
